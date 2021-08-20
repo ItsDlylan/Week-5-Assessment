@@ -1,20 +1,123 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Back End Assessment</title>
-  </head>
-  <body class="container">
-    <button id="complimentButton">Get a compliment</button>
+	<head>
+		<title>Back End Assessment</title>
+	</head>
+	<body class="container">
+		<button id="complimentButton">Get a compliment</button>
+		<section id="compliment-info"></section>
+		<button id="fortuneButton">Get a fortune</button>
+		<section id="fortune-info"></section>
+		<form id="currencyForm">
+			<h1>Changes EUR value to any of the following currencies</h1>
+			<label for="currencyAmount">Amount of Euros</label>
+			<input type="text" id="currencyAmount" name="currencyAmount" />
+			<select id="currencies">
+				<option value="USD">USD</option>
+				<option value="AUD">AUD</option>
+				<option value="CAD">CAD</option>
+				<option value="RUB">RUB</option>
+				<option value="BTC">Bitcoin</option>
+			</select>
+			<button type="submit" style="height: 10px; width: 30px">
+				Exchange!
+			</button>
+		</form>
+		<section id="currency-info"></section>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<script>
+			document.getElementById('complimentButton').onclick = function () {
+				axios
+					.get('http://localhost:4000/api/compliment/')
+					.then(function (response) {
+						const complimentSection =
+							document.querySelector('#compliment-info');
+						complimentSection.innerHTML = '';
+						const data = response.data;
+						const h1 = document.createElement('h1');
+						h1.textContent = data;
+						complimentSection.appendChild(h1);
+					});
+			};
 
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script>
-      document.getElementById("complimentButton").onclick = function () {
-        axios.get("http://localhost:4000/api/compliment/")
-            .then(function (response) {
-              const data = response.data;
-              alert(data);
-            });
-      };
-    </script>
-  </body>
+			document.getElementById('fortuneButton').onclick = function () {
+				axios
+					.get('http://localhost:4000/api/fortune/')
+					.then(function (response) {
+						const fortuneSection =
+							document.querySelector('#fortune-info');
+						fortuneSection.innerHTML = '';
+						const data = response.data;
+						const h1 = document.createElement('h1');
+						h1.textContent = data;
+						fortuneSection.appendChild(h1);
+					});
+			};
+
+			document
+				.getElementById('currencyForm')
+				.addEventListener('submit', (e) => {
+					e.preventDefault();
+					let fixerAPICount = 10;
+					var select = document.getElementById('currencies');
+					var selectValue =
+						select.options[select.selectedIndex].value;
+					const currencySection =
+						document.querySelector('#currency-info');
+					currencySection.innerHTML = '';
+
+					let formData = {
+						eurAmount:
+							document.querySelector('#currencyAmount').value,
+						currency: selectValue,
+					};
+					let returnOBJ = {
+						apiCallsLeft: fixerAPICount,
+						currencyValue: 0,
+					};
+					const h1 = document.createElement('h1');
+					axios
+						.get(
+							'http://data.fixer.io/api/latest?access_key=829dd8733519aa49162c54090c757e95',
+						)
+						.then((res) => {
+							fixerAPICount++;
+							let newAmount;
+							if (formData.currency === 'USD') {
+								newAmount = parseFloat(
+									formData.eurAmount * res.data.rates.USD,
+								).toFixed(2);
+								returnOBJ.currencyValue = newAmount;
+								h1.textContent = `${formData.eurAmount} EUR converted into USD is worth ${returnOBJ.currencyValue} USD`;
+							} else if (formData.currency === 'AUD') {
+								newAmount = parseFloat(
+									formData.eurAmount * res.data.rates.AUD,
+								).toFixed(2);
+								returnOBJ.currencyValue = newAmount;
+								h1.textContent = `${formData.eurAmount} EUR converted into AUD is worth ${returnOBJ.currencyValue} AUD`;
+							} else if (formData.currency === 'CAD') {
+								newAmount = parseFloat(
+									formData.eurAmount * res.data.rates.CAD,
+								).toFixed(2);
+								returnOBJ.currencyValue = newAmount;
+								h1.textContent = `${formData.eurAmount} EUR converted into CAD is worth ${returnOBJ.currencyValue} CAD`;
+							} else if (formData.currency === 'RUB') {
+								newAmount = parseFloat(
+									formData.eurAmount * res.data.rates.RUB,
+								).toFixed(2);
+								returnOBJ.currencyValue = newAmount;
+								h1.textContent = `${formData.eurAmount} EUR converted into RUB is worth ${returnOBJ.currencyValue} RUB`;
+							} else if (formData.currency === 'BTC') {
+								newAmount =
+									formData.eurAmount * res.data.rates.BTC;
+								returnOBJ.currencyValue = newAmount;
+								h1.textContent = `${formData.eurAmount} EUR converted into BTC is worth ${returnOBJ.currencyValue} BTC`;
+							}
+
+							// Insert Data into Dom
+							currencySection.appendChild(h1);
+						});
+				});
+		</script>
+	</body>
 </html>
