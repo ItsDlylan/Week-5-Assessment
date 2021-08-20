@@ -8,6 +8,8 @@
 		<section id="compliment-info"></section>
 		<button id="fortuneButton">Get a fortune</button>
 		<section id="fortune-info"></section>
+		<button id="motivationButton">Are you a quitter?</button>
+		<section id="motivation-info"></section>
 		<form id="currencyForm" style="margin-bottom: 20px">
 			<h1>Changes EUR value to any of the following currencies</h1>
 			<label for="currencyAmount">Amount of Euros</label>
@@ -2780,6 +2782,28 @@
 		<section id="meme-info"></section>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 		<script>
+			document.getElementById('motivationButton').onclick = function () {
+				const motivationSection =
+					document.querySelector('#motivation-info');
+				motivationSection.innerHTML = '';
+				fetch('https://type.fit/api/quotes')
+					.then(function (response) {
+						return response.json();
+					})
+					.then(function (data) {
+						let randomIndex = Math.floor(
+							Math.random() * data.length,
+						);
+						let randomCompliment = data[randomIndex];
+						const quote = document.createElement('blockquote');
+						const author = document.createElement('strong');
+						quote.textContent = randomCompliment.text;
+						author.textContent = `- ${randomCompliment.author}`;
+						motivationSection.appendChild(quote);
+						quote.appendChild(author);
+					});
+			};
+
 			// if hosted on heroku this would work, too late into the lab to delete and start over. stupid cors.
 			document
 				.getElementById('memeForm')
